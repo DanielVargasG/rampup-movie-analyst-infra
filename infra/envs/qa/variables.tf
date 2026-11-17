@@ -7,3 +7,8 @@ variable "api_port" {
   type    = number
   default = 3000
 }
+
+variable "key_name" {
+  type    = string
+  default = "key-pair-ssh"
+}
