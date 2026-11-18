@@ -37,3 +37,10 @@ module "bastion" {
   private_app_rt_id  = module.vpc.private_app_route_table_id
   private_db_rt_id   = module.vpc.private_db_route_table_id
 }
+
+module "rds" {
+  source                 = "../../modules/rds"
+  env_name                = "qa"
+  private_db_subnet_ids   = module.vpc.private_db_subnet_ids
+  db_sg_id                = module.security_groups.db_sg_id
+}
