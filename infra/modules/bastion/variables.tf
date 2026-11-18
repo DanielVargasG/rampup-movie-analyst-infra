@@ -32,3 +32,7 @@ variable "private_app_rt_id" {
 variable "private_db_rt_id" {
   type = string
 }
+
+variable "iam_instance_profile_name" {
+  type = string
+}

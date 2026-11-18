@@ -28,3 +28,22 @@ resource "aws_ssm_parameter" "db_master_password" {
   key_id = "alias/aws/ssm"
   value  = module.rds.db_master_password
 }
+
+resource "random_password" "db_app" {
+  length           = 20
+  special          = true
+  override_special = "!#%^*()-_=+[]{}<>?"
+}
+
+resource "aws_ssm_parameter" "db_app_username" {
+  name  = "/rampup/qa/db/app_username"
+  type  = "String"
+  value = "applicationuser"
+}
+
+resource "aws_ssm_parameter" "db_app_password" {
+  name   = "/rampup/qa/db/app_password"
+  type   = "SecureString"
+  key_id = "alias/aws/ssm"
+  value  = random_password.db_app.result
+}

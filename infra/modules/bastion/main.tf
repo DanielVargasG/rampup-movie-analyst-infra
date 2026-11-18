@@ -5,6 +5,7 @@ resource "aws_instance" "bastion" {
   vpc_security_group_ids      = [var.sg_id]
   key_name                    = var.key_name
   associate_public_ip_address = true
+  iam_instance_profile        = var.iam_instance_profile_name
 
   # Desactivar source/dest check — imprescindible para que funcione como NAT
   source_dest_check = false
