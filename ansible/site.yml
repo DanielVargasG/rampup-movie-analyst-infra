@@ -1,0 +1,6 @@
+---
+- name: Configuracion base de todos los hosts
+  hosts: role_backend:role_front
+  become: true
+  roles:
+    - common

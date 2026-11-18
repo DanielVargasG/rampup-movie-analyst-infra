@@ -1,0 +1,25 @@
+---
+- name: Actualizar todos los paquetes del sistema
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+  become: true
+
+- name: Configurar zona horaria
+  community.general.timezone:
+    name: "{{ timezone }}"
+  become: true
+
+- name: Instalar git
+  ansible.builtin.dnf:
+    name: git
+    state: present
+  become: true
+
+- name: Crear usuario de servicio para la aplicacion
+  ansible.builtin.user:
+    name: "{{ app_user }}"
+    system: true
+    shell: /sbin/nologin
+    create_home: true
+  become: true
