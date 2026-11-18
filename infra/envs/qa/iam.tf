@@ -50,9 +50,15 @@ data "aws_iam_policy_document" "bastion_ssm_read" {
     resources = ["arn:aws:kms:us-east-2:*:alias/aws/ssm"]
   }
   statement {
-    actions   = ["ec2:DescribeInstances"]
-    resources = ["*"] # DescribeInstances no admite scoping por ARN
-  }
+    actions = [
+      "ec2:DescribeInstances",
+      "ec2:DescribeAvailabilityZones",
+      "ec2:DescribeSubnets",
+      "ec2:DescribeVpcs",
+      "ec2:DescribeTags",
+    ]
+    resources = ["*"] # estas acciones de EC2 no admiten scoping por ARN
+}
 }
 
 resource "aws_iam_role" "bastion" {
