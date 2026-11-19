@@ -1,4 +1,9 @@
 ---
+- name: Marcar el repositorio como directorio seguro para git
+  ansible.builtin.command: git config --global --add safe.directory {{ repo_dest }}
+  become: true
+  changed_when: false
+  
 - name: Clonar repositorio de la aplicacion
   ansible.builtin.git:
     repo: "{{ repo_url }}"
