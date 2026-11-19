@@ -1,0 +1,22 @@
+---
+- name: Agregar repositorio de NodeSource (Node 20 LTS)
+  ansible.builtin.shell: |
+    curl -fsSL https://rpm.nodesource.com/setup_20.x | bash -
+  args:
+    creates: /etc/yum.repos.d/nodesource-el.repo
+  become: true
+
+- name: Instalar Node.js
+  ansible.builtin.dnf:
+    name: nodejs
+    state: present
+  become: true
+
+- name: Verificar version de Node instalada
+  ansible.builtin.command: node --version
+  register: node_version
+  changed_when: false
+
+- name: Mostrar version de Node
+  ansible.builtin.debug:
+    var: node_version.stdout
