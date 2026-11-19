@@ -17,3 +17,8 @@ variable "ami_id" {
   type    = string
   default = "ami-0bb93e0b5d3dcc3b5" # AL2023 fijado — evita recrear instancias por una AMI mas nueva
 }
+
+variable "allow_bastion_db_access" {
+  type    = bool
+  default = false
+}

@@ -15,6 +15,7 @@ module "security_groups" {
   vpc_id   = module.vpc.vpc_id
   my_ip    = var.my_ip
   api_port = var.api_port
+  allow_bastion_db_access  = var.allow_bastion_db_access
 }
 
 data "aws_ami" "al2023" {
