@@ -1,0 +1,17 @@
+---
+- name: Recargar systemd
+  ansible.builtin.systemd:
+    daemon_reload: true
+  become: true
+
+- name: Reiniciar frontend
+  ansible.builtin.systemd:
+    name: frontend
+    state: restarted
+  become: true
+
+- name: Reiniciar nginx
+  ansible.builtin.systemd:
+    name: nginx
+    state: restarted
+  become: true

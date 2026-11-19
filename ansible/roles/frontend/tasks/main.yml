@@ -1,0 +1,70 @@
+---
+- name: Clonar repositorio de la aplicacion (si no existe aun en este host)
+  ansible.builtin.git:
+    repo: "{{ repo_url }}"
+    dest: "{{ repo_dest }}"
+    version: master
+    force: true
+  become: true
+
+- name: Asegurar que appuser sea dueno del repositorio
+  ansible.builtin.file:
+    path: "{{ repo_dest }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    recurse: true
+  become: true
+
+- name: Escribir archivo de entorno del frontend
+  ansible.builtin.template:
+    src: frontend.env.j2
+    dest: "{{ repo_dest }}/{{ frontend_subdir }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "0600"
+  become: true
+  no_log: true
+  notify: Reiniciar frontend
+
+- name: Instalar dependencias npm
+  community.general.npm:
+    path: "{{ repo_dest }}/{{ frontend_subdir }}"
+  become: true
+
+- name: Instalar unit de systemd para el frontend
+  ansible.builtin.template:
+    src: frontend.service.j2
+    dest: /etc/systemd/system/frontend.service
+    mode: "0644"
+  become: true
+  notify:
+    - Recargar systemd
+    - Reiniciar frontend
+
+- name: Habilitar e iniciar el servicio frontend
+  ansible.builtin.systemd:
+    name: frontend
+    enabled: true
+    state: started
+  become: true
+
+- name: Instalar Nginx
+  ansible.builtin.dnf:
+    name: nginx
+    state: present
+  become: true
+
+- name: Configurar Nginx como proxy hacia el frontend
+  ansible.builtin.template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/conf.d/frontend.conf
+    mode: "0644"
+  become: true
+  notify: Reiniciar nginx
+
+- name: Habilitar e iniciar Nginx
+  ansible.builtin.systemd:
+    name: nginx
+    enabled: true
+    state: started
+  become: true

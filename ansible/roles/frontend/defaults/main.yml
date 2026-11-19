@@ -1,0 +1,5 @@
+app_user: "appuser"
+repo_url: "https://github.com/DanielVargasG/devops-rampup.git"
+repo_dest: "/home/{{ app_user }}/devops-rampup"
+frontend_subdir: "movie-analyst-ui"
+frontend_port: 3030

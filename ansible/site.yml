@@ -12,3 +12,11 @@
   become: true
   roles:
     - backend
+
+- name: Configuracion especifica del frontend
+  hosts: role_front
+  become: true
+  vars:
+    backend_url: "internal-qa-alb-1482330785.us-east-2.elb.amazonaws.com:80"
+  roles:
+    - frontend

@@ -31,6 +31,7 @@
     group: "{{ app_user }}"
     mode: "0600"
   become: true
+  no_log: true
   notify: Reiniciar backend
 
 - name: Instalar dependencias npm
