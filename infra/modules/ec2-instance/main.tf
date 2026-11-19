@@ -16,4 +16,9 @@ resource "aws_instance" "this" {
     Env  = var.env_name
     Role = var.role_name
   }
+
+  root_block_device {
+    volume_size = 8
+    volume_type = "gp3"
+  }
 }
