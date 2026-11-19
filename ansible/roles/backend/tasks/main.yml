@@ -6,7 +6,14 @@
     version: main
     force: true
   become: true
-  become_user: "{{ app_user }}"
+
+- name: Asegurar que appuser sea dueno del repositorio
+  ansible.builtin.file:
+    path: "{{ repo_dest }}"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    recurse: true
+  become: true
 
 - name: Fijar variables de BD leidas desde SSM
   ansible.builtin.set_fact:
@@ -30,7 +37,6 @@
   community.general.npm:
     path: "{{ repo_dest }}/{{ backend_subdir }}"
   become: true
-  become_user: "{{ app_user }}"
 
 - name: Instalar unit de systemd para el backend
   ansible.builtin.template:
