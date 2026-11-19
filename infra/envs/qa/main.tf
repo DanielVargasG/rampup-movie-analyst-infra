@@ -30,7 +30,7 @@ data "aws_ami" "al2023" {
 module "bastion" {
   source             = "../../modules/bastion"
   env_name           = "qa"
-  ami_id             = data.aws_ami.al2023.id
+  ami_id             = var.ami_id
   public_subnet_id   = module.vpc.public_subnet_ids[0]
   sg_id              = module.security_groups.bastion_sg_id
   key_name           = var.key_name
@@ -50,7 +50,7 @@ module "backend_ec2" {
   source               = "../../modules/ec2-instance"
   env_name             = "qa"
   role_name            = "backend"
-  ami_id               = data.aws_ami.al2023.id
+  ami_id               = var.ami_id
   subnet_id            = module.vpc.private_app_subnet_ids[0]
   sg_id                = module.security_groups.back_sg_id
   key_name             = var.key_name
@@ -62,11 +62,12 @@ module "front_ec2" {
   source              = "../../modules/ec2-instance"
   env_name            = "qa"
   role_name           = "front"
-  ami_id              = data.aws_ami.al2023.id
+  ami_id              = var.ami_id
   subnet_id           = module.vpc.public_subnet_ids[0]
   sg_id               = module.security_groups.front_sg_id
   key_name            = var.key_name
   associate_public_ip = true
+  iam_instance_profile_name = aws_iam_instance_profile.front.name
 }
 
 module "alb" {

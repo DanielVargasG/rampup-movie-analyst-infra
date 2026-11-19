@@ -14,6 +14,10 @@ data "aws_iam_policy_document" "backend_ssm_read" {
     actions   = ["kms:Decrypt"]
     resources = ["arn:aws:kms:us-east-2:*:alias/aws/ssm"]
   }
+  statement {
+    actions   = ["cloudwatch:PutMetricData"]
+    resources = ["*"] # PutMetricData no admite scoping por ARN
+  }
 }
 
 resource "aws_iam_role" "backend" {
@@ -82,4 +86,34 @@ resource "aws_iam_role_policy" "bastion_ssm" {
 resource "aws_iam_instance_profile" "bastion" {
   name = "qa-bastion-profile"
   role = aws_iam_role.bastion.name
+}
+
+resource "aws_iam_role" "front" {
+  name = "qa-front-role"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action    = "sts:AssumeRole"
+      Effect    = "Allow"
+      Principal = { Service = "ec2.amazonaws.com" }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "front_cloudwatch" {
+  name = "cloudwatch-put-metrics"
+  role = aws_iam_role.front.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action   = "cloudwatch:PutMetricData"
+      Effect   = "Allow"
+      Resource = "*"
+    }]
+  })
+}
+
+resource "aws_iam_instance_profile" "front" {
+  name = "qa-front-profile"
+  role = aws_iam_role.front.name
 }
