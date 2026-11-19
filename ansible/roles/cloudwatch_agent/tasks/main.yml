@@ -1,0 +1,21 @@
+---
+- name: Instalar el agente de CloudWatch
+  ansible.builtin.dnf:
+    name: amazon-cloudwatch-agent
+    state: present
+  become: true
+
+- name: Copiar configuracion del agente
+  ansible.builtin.template:
+    src: config.json.j2
+    dest: /opt/aws/amazon-cloudwatch-agent/etc/amazon-cloudwatch-agent.json
+    mode: "0644"
+  become: true
+  notify: Reiniciar agente de CloudWatch
+
+- name: Habilitar e iniciar el agente de CloudWatch
+  ansible.builtin.systemd:
+    name: amazon-cloudwatch-agent
+    enabled: true
+    state: started
+  become: true
