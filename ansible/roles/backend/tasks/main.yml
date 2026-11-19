@@ -1,0 +1,62 @@
+---
+- name: Clonar repositorio de la aplicacion
+  ansible.builtin.git:
+    repo: "{{ repo_url }}"
+    dest: "{{ repo_dest }}"
+    version: main
+    force: true
+  become: true
+  become_user: "{{ app_user }}"
+
+- name: Leer parametros de conexion a BD desde SSM
+  amazon.aws.aws_ssm_parameter_store:
+    name: "{{ item }}"
+    region: us-east-2
+  loop:
+    - /rampup/qa/db/host
+    - /rampup/qa/db/name
+    - /rampup/qa/db/app_username
+    - /rampup/qa/db/app_password
+  register: ssm_params
+  no_log: true
+
+- name: Fijar variables de BD como facts
+  ansible.builtin.set_fact:
+    db_host: "{{ ssm_params.results[0].value }}"
+    db_name: "{{ ssm_params.results[1].value }}"
+    db_app_username: "{{ ssm_params.results[2].value }}"
+    db_app_password: "{{ ssm_params.results[3].value }}"
+  no_log: true
+
+- name: Escribir archivo de entorno del backend
+  ansible.builtin.template:
+    src: backend.env.j2
+    dest: "{{ repo_dest }}/{{ backend_subdir }}/.env"
+    owner: "{{ app_user }}"
+    group: "{{ app_user }}"
+    mode: "0600"
+  become: true
+  notify: Reiniciar backend
+
+- name: Instalar dependencias npm
+  community.general.npm:
+    path: "{{ repo_dest }}/{{ backend_subdir }}"
+  become: true
+  become_user: "{{ app_user }}"
+
+- name: Instalar unit de systemd para el backend
+  ansible.builtin.template:
+    src: backend.service.j2
+    dest: /etc/systemd/system/backend.service
+    mode: "0644"
+  become: true
+  notify:
+    - Recargar systemd
+    - Reiniciar backend
+
+- name: Habilitar e iniciar el servicio backend
+  ansible.builtin.systemd:
+    name: backend
+    enabled: true
+    state: started
+  become: true

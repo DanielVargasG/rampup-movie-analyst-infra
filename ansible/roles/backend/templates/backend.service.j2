@@ -1,0 +1,15 @@
+[Unit]
+Description=Movie Analyst API (backend)
+After=network.target
+
+[Service]
+Type=simple
+User={{ app_user }}
+WorkingDirectory={{ repo_dest }}/{{ backend_subdir }}
+EnvironmentFile={{ repo_dest }}/{{ backend_subdir }}/.env
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

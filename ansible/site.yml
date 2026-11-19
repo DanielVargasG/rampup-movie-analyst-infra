@@ -6,3 +6,9 @@
     - common
     - cloudwatch_agent
     - nodejs
+
+- name: Configuracion especifica del backend
+  hosts: role_backend
+  become: true
+  roles:
+    - backend
