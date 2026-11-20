@@ -80,3 +80,14 @@ module "alb" {
   target_instance_id     = module.backend_ec2.instance_id
   target_port            = var.api_port
 }
+
+module "observability" {
+  source                  = "../../modules/observability"
+  env_name                = "qa"
+  alarm_email              = var.alarm_email
+  backend_instance_id      = module.backend_ec2.instance_id
+  front_instance_id        = module.front_ec2.instance_id
+  alb_arn_suffix           = module.alb.alb_arn_suffix
+  target_group_arn_suffix  = module.alb.target_group_arn_suffix
+  db_instance_id           = module.rds.db_instance_id
+}

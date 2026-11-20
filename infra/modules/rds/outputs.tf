@@ -18,3 +18,7 @@ output "db_master_password" {
   value     = random_password.db_master.result
   sensitive = true
 }
+
+output "db_instance_id" {
+  value = aws_db_instance.this.identifier
+}

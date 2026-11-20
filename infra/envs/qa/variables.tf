@@ -22,3 +22,8 @@ variable "allow_bastion_db_access" {
   type    = bool
   default = false
 }
+
+variable "alarm_email" {
+  type = string
+  default = "daniel.vargon01@gmail.com"
+}
